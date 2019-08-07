@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>格式化CSS</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1338278_177xpkn8fzd.css">
+    <style>
+        * {padding: 0; margin: 0;font-family: Microsoft Yahei Light;}
+        body { background-color: #f9f9f9; padding: 50px; box-sizing: border-box;}
+        body::after {content: ''; clear: both;}
+        .btn {margin-bottom: 10px;}
+        .btn a {display: inline-block; background-color: #0c80fe; color: #ffffff; font-size: 18px; padding: 4px 50px; border-radius: 2px;}
+        .btn a:hover {cursor: pointer}
+        .left, .right {position: relative;float: left;width: calc(50% - 30px);height: 700px;}
+        .left textarea {background-color: #ffffff;border: 1px solid #8994ab;}
+        .left textarea::-webkit-input-placeholder {font-size: 20px;color: #d4d4d4;}
+        .left a.clear {color: #888888; position: absolute; top: 5px; right: 5px; border-radius: 100%; display: none; width: 40px; height: 40px; line-height: 40px; text-align: center;}
+        .left a.clear i {font-size: 25px; color: #989898;}
+        .left a.clear:hover {background: #e0e0e0;}
+        .left.copy a {display: block;}
+        .right {margin-left: 50px;}
+        .right textarea {background-color: #f0f0f0;border: 1px solid #f0f0f0;}
+        .right a.copy { color: #888888; position: absolute; top: 5px; right: 5px; border-radius: 100%; display: none; width: 40px; height: 40px; line-height: 40px; text-align: center;}
+        .right a.copy:hover {background: #e0e0e0; }
+        .right a.copy i {font-size: 25px; color: #989898;}
+        .right.copy a {display: block;}
+        textarea {margin: 0;width: 100%;height: 100%;border-radius: 2px;padding: 10px; box-sizing: border-box;font-size: 15px;resize: none;}
+    </style>
+    <script>
+        let [sourceArea, targetArea] = [];
+
+        function addClass(element, className) {
+            let preClass = element.getAttribute('class');
+            if (preClass) {
+                preClass = preClass.trim();
+                if (!preClass.includes(className)) {
+                    element.setAttribute('class', preClass + ' ' + className);
+                }
+            } else {
+                element.setAttribute('class', className);
+            }
+        }
+
+        function removeClass(element, className) {
+            let preClass = element.getAttribute('class');
+            if (preClass && preClass.includes(className)) {
+                element.setAttribute('class', preClass.replace(className, ''));
+            }
+        }
+
+        function format() {
+            let sourceCode = sourceArea.value;
+            let targetCode = sourceCode.replace(/\n+/g, '').replace(/\s+/g, ' ').replace(/}/g, '}\n');
+            if (Object.is(sourceCode.trim(), '')) {
+                alert('请输入要转换的代码');
+                sourceArea.value = '';
+                return;
+            }
+            targetArea.value = targetCode;
+            addClass(targetArea.parentElement, 'copy');
+        }
+
+        function copyCode() {
+            targetArea.select();
+            document.execCommand('copy');
+        }
+
+        function clearText() {
+            sourceArea.value = '';
+            targetArea.value = '';
+            removeClass(sourceArea.parentElement, 'copy');
+            removeClass(targetArea.parentElement, 'copy');
+        }
+
+        window.onload = function () {
+            sourceArea = document.getElementById('source');
+            targetArea = document.getElementById('target');
+            sourceArea.addEventListener('input', function (e) {
+                if (Object.is(this.value.trim(), '')) {
+                    removeClass(targetArea.parentElement, 'copy');
+                    removeClass(sourceArea.parentElement, 'copy');
+                    targetArea.value = '';
+                } else {
+                    addClass(sourceArea.parentElement, 'copy');
+                }
+            });
+            document.addEventListener('keydown', function (e) {
+                setTimeout(() => {
+                    if (Object.is(e.key, 'Enter')) {
+                        format();
+                    }
+                }, 50);
+            });
+        };
+    </script>
+</head>
+<body>
+<div class="btn"><a onclick="format();">转换</a></div>
+<div class="left">
+    <textarea id="source" name="source" placeholder="输入要转换的代码"></textarea>
+    <a class="clear" onclick="clearText();">
+        <i class="icon iconclose"></i>
+    </a>
+</div>
+<div class="right">
+    <textarea id="target" name="target" readonly="readonly"></textarea>
+    <a class="copy" onclick="copyCode();">
+        <i class="icon iconcopy"></i>
+    </a>
+</div>
+</body>
+</html>
